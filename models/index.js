@@ -12,10 +12,6 @@ var Page = db.define('page', {
         type: Sequelize.STRING,
         allowNull: false
     },
-    // get route(){
-    //     var route = '/wiki/' + urlTitle;
-    //     return route;
-    // },
     content: {
         type: Sequelize.TEXT,
         allowNull: false
@@ -32,7 +28,20 @@ var Page = db.define('page', {
             route(){
                 return '/wiki/' + this.urlTitle;
             }
+        },
+            hooks: {
+        beforeValidate: function generateUrlTitle (page) {
+            console.log('running')
+            if (page.title) {
+    // Removes all non-alphanumeric characters from title
+    // And make whitespace underscore
+                page.urlTitle = page.title.replace(/\s+/g, '_').replace(/\W/g, '');
+            } else {
+    // Generates random 5 letter string
+                page.urlTitle = Math.random().toString(36).substring(2, 7);
+            }
         }
+    }
     }
 );
 

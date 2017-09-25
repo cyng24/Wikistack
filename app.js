@@ -1,11 +1,23 @@
 const express = require('express');
 const app = express();
-var body_parser = require('body-parser');
+var bodyParser = require('body-parser');
 var morgan = require('morgan');
 var nunjucks = require('nunjucks');
 var models = require('./models');
+var path = require('path');
 
-// ... other stuff
+//middleware
+app.engine('html', nunjucks.render);
+app.set('view engine', 'html');
+nunjucks.configure('views', { noCache: true});
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(morgan('dev'));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+//routes
+var routes = require('./routes');
+app.use(routes);//plugging them in
 
 // models.User.sync({ force: true })
 // .then(function () {
@@ -27,3 +39,4 @@ models.db.sync({})
     });
 })
 .catch(console.error);
+
